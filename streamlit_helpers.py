@@ -9,16 +9,38 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Spotify API ayarları
-CLIENT_ID = st.secrets.get("SPOTIFY_CLIENT_ID")
-CLIENT_SECRET = st.secrets.get("SPOTIFY_CLIENT_SECRET")
-REDIRECT_URI = st.secrets.get("REDIRECT_URI", "https://cerryrecommends.com/*")
-SCOPES = "user-read-private playlist-read-private playlist-modify-private playlist-modify-public user-library-read"
+# Spotify API ayarları (güvenli erişim: önce Streamlit secrets, sonra environment)
+import os
 
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
-                                               client_secret=CLIENT_SECRET,
-                                               redirect_uri=REDIRECT_URI,
-                                               scope=SCOPES))
+def get_secret(key, default=None, required=False):
+    val = None
+    try:
+        val = st.secrets.get(key)
+    except Exception:
+        val = None
+    if not val:
+        val = os.environ.get(key, default)
+    if required and not val:
+        st.error(f"⚠️ Missing configuration: `{key}`. Add it in Streamlit Cloud Secrets or set as an environment variable.")
+        st.stop()
+    return val
+
+CLIENT_ID = get_secret("SPOTIFY_CLIENT_ID", required=True)
+CLIENT_SECRET = get_secret("SPOTIFY_CLIENT_SECRET", required=True)
+REDIRECT_URI = get_secret("REDIRECT_URI", default="http://localhost:8501", required=True)
+SCOPES = get_secret(
+    "SCOPES",
+    default="user-read-private playlist-read-private playlist-modify-private playlist-modify-public user-library-read",
+)
+
+sp = spotipy.Spotify(
+    auth_manager=SpotifyOAuth(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        redirect_uri=REDIRECT_URI,
+        scope=SCOPES,
+    )
+)
 
 TRACK_FEATURES = ["danceability", "energy", "valence", "tempo", "acousticness", "instrumentalness", "liveness", "speechiness"]
 
