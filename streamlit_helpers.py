@@ -1,3 +1,4 @@
+st.write("Secrets kontrol:", st.secrets)
 import streamlit as st
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
