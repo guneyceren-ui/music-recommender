@@ -27,7 +27,7 @@ def get_secret(key, default=None, required=False):
 
 CLIENT_ID = get_secret("SPOTIFY_CLIENT_ID", required=True)
 CLIENT_SECRET = get_secret("SPOTIFY_CLIENT_SECRET", required=True)
-REDIRECT_URI = get_secret("REDIRECT_URI", default="http://localhost:8501", required=True)
+REDIRECT_URI = get_secret("REDIRECT_URI", default="https://music-recommender-ef4nvdpuh9tg8t2ibzrpjz.streamlit.app/", required=True)
 SCOPES = get_secret(
     "SCOPES",
     default="user-read-private playlist-read-private playlist-modify-private playlist-modify-public user-library-read",
